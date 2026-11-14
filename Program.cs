@@ -40,15 +40,9 @@ namespace Medvedev
             AccountNumber(a);
         }
 
-        public decimal Balance
+        public void Balance(decimal balance) 
         {
-            get { return balance; }
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentException("Баланс не может быть отрицательным");
-                balance = value;
-            }
+            this.balance = balance;
         }
 
         public AccountType Type
@@ -68,7 +62,7 @@ namespace Medvedev
             while (!decimal.TryParse(Console.ReadLine(), out b) || b < 0) ;//если ошибка в формате
             Console.Write("Некоректно повторите");
 
-            Balance = b;
+            Balance(b);
 
             Console.WriteLine("Выберите тип счёта:");
             Console.WriteLine("1 — депозитный");
@@ -118,13 +112,14 @@ namespace Medvedev
             else
             {
                 decimal a = balance - db;
-                Balance = a;
+                Balance(a);
             }
         }
 
         private void Put(decimal bd)
         {
-            Balance = bd + balance;
+            decimal c = bd + balance;
+            Balance(c);
         }
 
         public void Conclusion()
