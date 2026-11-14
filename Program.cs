@@ -21,7 +21,7 @@ namespace Medvedev
         private decimal balance;        // баланс 
         private AccountType type;       // тип счёта — ENUM
 
-
+        //метод генерирующий номер счета
         private static int GenerateAccountNumber()
         {
             int number = nextAccountNumber;   // взяли текущий
@@ -29,16 +29,16 @@ namespace Medvedev
             return number;                     // вернули уникальный
         }
 
+        private void AccountNumber(int accountNumber)
+        {
+            this.accountNumber =  accountNumber;
+        }
+
         public BankAccount()
         {
-            accountNumber = GenerateAccountNumber();
+            int a = GenerateAccountNumber();
+            AccountNumber(a);
         }
-
-        public int AccountNumber
-        {
-            get { return accountNumber; }
-        }
-
 
         public decimal Balance
         {
