@@ -4,65 +4,73 @@ using System.IO;
 
 namespace Medvedev
 {
-
     enum AccountType
     {
-        Deposit,    // депозитный
-        Credit,     // кредитный
-        Settlement, // расчётный
-        Savings     // сберегательный
+        Deposit, //депозитныйй
+        Credit, //кредитный
+        Settlement, //расчетный
+        Savings //сберегательный
     }
 
     class BankAccount
     {
         private static int nextAccountNumber = 1;
 
-        private int accountNumber;   // номер счёта 
-        private decimal balance;        // баланс 
-        private AccountType type;       // тип счёта — ENUM
+        private int accountNumber; //номер счета
+        private decimal balance; //баланс
+        private AccountType type; //тип счета - ENUM
 
-        //метод генерирующий номер счета
         private static int GenerateAccountNumber()
         {
-            int number = nextAccountNumber;   // взяли текущий
-            nextAccountNumber++;              // увеличили для следующего
-            return number;                     // вернули уникальный
-        }
-
-        private void AccountNumber(int accountNumber)
-        {
-            this.accountNumber =  accountNumber;
+            int number = nextAccountNumber; //взяли текущий
+            nextAccountNumber++; //увеличили для следующего
+            return number; // вернули уникальный
         }
 
         public BankAccount()
         {
-            int a = GenerateAccountNumber();
-            AccountNumber(a);
+            accountNumber = GenerateAccountNumber();
         }
 
-        public void Balance(decimal balance) 
+        public BankAccount(decimal balance) : this()
         {
             this.balance = balance;
+        }
+
+        public BankAccount(AccountType type) : this()
+        {
+            this.type = type;
+        }
+
+        public BankAccount(decimal balance, AccountType type) : this()
+        {
+            this.balance = balance;
+            this.type = type;
+        }
+
+        public int AccountNumber
+        {
+            get { return accountNumber; }
+        }
+
+        public decimal Balance
+        {
+            get { return balance; }
         }
 
         public AccountType Type
         {
             get { return type; }
-            set { type = value; }
         }
-
-
 
         public void Access()
         {
-
-
             Console.Write("Введите баланс: ");
             decimal b;
-            while (!decimal.TryParse(Console.ReadLine(), out b) || b < 0) ;//если ошибка в формате
-            Console.Write("Некоректно повторите");
+            while (!decimal.TryParse(Console.ReadLine(), out b) || b < 0)
+                Console.Write("Некорректно, повторите: ");
 
-            Balance(b);
+            balance = b;
 
             Console.WriteLine("Выберите тип счёта:");
             Console.WriteLine("1 — депозитный");
@@ -73,53 +81,48 @@ namespace Medvedev
 
             int choice = int.Parse(Console.ReadLine());
 
+            if (choice == 1) type = AccountType.Deposit;
+            else if (choice == 2) type = AccountType.Credit;
+            else if (choice == 3) type = AccountType.Settlement;
+            else type = AccountType.Savings;
 
-            if (choice == 1) Type = AccountType.Deposit;
-            else if (choice == 2) Type = AccountType.Credit;
-            else if (choice == 3) Type = AccountType.Settlement;
-            else Type = AccountType.Savings;
-
-            Console.WriteLine("Выбирите действием со счетом:");
-            Console.WriteLine("1 - Снять деньги с банковского счета");
-            Console.WriteLine("2 - Пополнить банковский счет");
-            Console.Write("Выш выбор: ");
+            Console.WriteLine("Выберите действие со счётом:");
+            Console.WriteLine("1 - Снять деньги");
+            Console.WriteLine("2 - Пополнить счёт");
+            Console.Write("Ваш выбор: ");
             int action;
             while (!int.TryParse(Console.ReadLine(), out action) || action < 1 || action > 2)
                 Console.Write("Некорректно (1–2), повторите: ");
 
             if (action == 1)
             {
-                Console.Write("Какаю сумму вы хотите снять со счета: ");
+                Console.Write("Какую сумму хотите снять: ");
                 decimal db = decimal.Parse(Console.ReadLine());
-
                 TakeOff(db);
             }
-
             else if (action == 2)
             {
                 Console.Write("Какую сумму хотите положить: ");
                 decimal bd = decimal.Parse(Console.ReadLine());
-
                 Put(bd);
             }
-
-
         }
 
         private void TakeOff(decimal db)
         {
-            if (db > balance) { Console.WriteLine($"Недостаточно средст на счету {Type}"); }
+            if (db > balance)
+            {
+                Console.WriteLine($"Недостаточно средств на счёте {Type}");
+            }
             else
             {
-                decimal a = balance - db;
-                Balance(a);
+                balance -= db;
             }
         }
 
         private void Put(decimal bd)
         {
-            decimal c = bd + balance;
-            Balance(c);
+            balance += bd;
         }
 
         public void Conclusion()
@@ -145,8 +148,8 @@ namespace Medvedev
 
         public void Transfer(BankAccount fromAccount, decimal amount)
         {
-            fromAccount.Balance -= amount;
-            this.Balance += amount;
+            fromAccount.balance -= amount;
+            this.balance += amount;
         }
     }
 
@@ -159,24 +162,23 @@ namespace Medvedev
             bank1.Access();
             bank1.Conclusion();
 
-
             Console.WriteLine();
             BankAccount bank2 = new BankAccount();
             Console.WriteLine("--- Счёт № 2 ---");
             bank2.Access();
             bank2.Conclusion();
 
-
-            Console.WriteLine("Перевод на другой счет суммой 100 рублей");
-
+            Console.WriteLine("\nПеревод 100 ₽ со счёта №1 на счёт №2");
             try
             {
                 bank2.Transfer(bank1, 100);
+                bank1.Conclusion();
                 bank2.Conclusion();
-
             }
-
-            catch (Exception ex) { Console.WriteLine($"Ошибка перевода {ex.Message}"); }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка перевода: {ex.Message}");
+            }
         }
     }
 }
