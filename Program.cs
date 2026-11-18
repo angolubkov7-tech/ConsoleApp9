@@ -38,7 +38,7 @@ namespace Medvedev
             return $"{date:dd.MM.yyy HH:mm:ss} | {amount:+0.00; -0.00; 0.00} ₽";
         }
 
-        class BankAccount
+        class BankAccount : IDisposable
         {
             private static int nextAccountNumber = 1;
 
@@ -46,6 +46,7 @@ namespace Medvedev
             private decimal balance; //баланс
             private AccountType type; //тип счета - ENUM
             private Queue transactions = new Queue();
+            private bool disposed = false;
 
             private static int GenerateAccountNumber()
             {
@@ -194,6 +195,34 @@ namespace Medvedev
             {
                 fromAccount.balance -= amount;
                 this.balance += amount;
+            }
+
+            public void Dispose()
+            {
+                if (disposed) return;
+                string fileName = $"transactions_{accountNumber}.txt";
+
+                string[] lines;
+                if (transactions.Count == 0)
+                {
+                    lines = new string[] { $"Счёт №{accountNumber}: операций не было." };
+                }
+
+                else
+                {
+                    lines = new string[transactions.Count];
+                    int i = 0;
+                    foreach (BankTransaction item in transactions)
+                    {
+                        lines[i] = item.ToString();
+                        i++;
+                    }
+                }
+
+                File.WriteAllLines(fileName, lines);
+
+                disposed = true;
+                GC.SuppressFinalize(this);
             }
         }
 
